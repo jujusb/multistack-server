@@ -1,0 +1,87 @@
+(common) {
+	encode gzip zstd
+}
+
+(common_basic_auth) {
+	basic_auth * argon2id {
+		{$BASIC_AUTH_USERNAME} {$BASIC_AUTH_PASSWORD_HASH}
+	}
+}
+
+(common_tls) {
+	{$TLS_CONFIG}
+}
+
+https://{$VPN_ADMIN_SERVER_ADDRESS} {
+		import common
+		import common_tls
+		import common_basic_auth
+
+        # since the container will share the network with wg-easy
+        # we can use the proper container name
+        reverse_proxy wg-easy:80 {
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+		}
+}
+
+https://{$MUSIC_SERVER_ADDRESS} {
+	import common
+	import common_tls
+
+	# 1. Strip the blocking header sent by Navidrome
+    header -X-Frame-Options
+
+    # 2. Add your own CSP to allow your website to embed it
+    # Replace 'https://your-website.com' with the domain doing the embedding
+	header Content-Security-Policy "frame-ancestors 'self' https://{$KUNO_SERVER_ADDRESS}"
+
+	reverse_proxy caddy-navidrome:80  {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+https://{$TRANSLATE_SERVER_ADDRESS} {
+	import common
+	import common_tls
+		
+	reverse_proxy libretranslate:5000  {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+https://{$KUNO_SERVER_ADDRESS} {
+	import common
+	import common_tls
+
+	reverse_proxy kuno:80  {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+https://{$MINECRAFT_ADMIN_SERVER_ADDRESS} {
+	import common
+	import common_tls
+
+	reverse_proxy https://crafty:8443 {
+		transport http {
+			tls_insecure_skip_verify
+		}
+
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+https://{$MINECRAFT_DYNMAP_SERVER_ADDRESS} {
+	import common
+	import common_tls
+
+	reverse_proxy crafty:8123  {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}

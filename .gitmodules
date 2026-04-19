@@ -1,0 +1,15 @@
+[submodule "blog"]
+	path = blog
+	url = https://github.com/jujusb/kuno-docker-arm64.git
+[submodule "vpn"]
+	path = vpn
+	url = https://github.com/jujusb/vpn-docker
+[submodule "navidrome"]
+	path = navidrome
+	url = https://github.com/jujusb/navidrome-docker-with-guest-account-and-registration
+[submodule "libretranslate"]
+	path = libretranslate
+	url = https://github.com/jujusb/libretranslate-docker
+[submodule "minecraft-server"]
+	path = minecraft-server
+	url = https://github.com/jujusb/minecraft-server-crafty-docker
