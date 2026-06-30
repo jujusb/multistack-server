@@ -8,26 +8,19 @@
 	}
 }
 
-(common_tls) {
-	{$TLS_CONFIG}
-}
-
-https://{$VPN_ADMIN_SERVER_ADDRESS} {
+:{$VPN_PORT} {
 		import common
-		import common_tls
-		import common_basic_auth
 
-        # since the container will share the network with wg-easy
+        # since the container will share the network with wireguard
         # we can use the proper container name
-        reverse_proxy wg-easy:80 {
+        reverse_proxy tailscale_web:8240 {
 			header_up Host {host}
 			header_up X-Real-IP {remote_host}
 		}
 }
 
-https://{$MUSIC_SERVER_ADDRESS} {
+:{$MUSIC_PORT} {
 	import common
-	import common_tls
 
 	# 1. Strip the blocking header sent by Navidrome
     header -X-Frame-Options
@@ -42,9 +35,8 @@ https://{$MUSIC_SERVER_ADDRESS} {
 	}
 }
 
-https://{$TRANSLATE_SERVER_ADDRESS} {
+:{$TRANSLATE_PORT} {
 	import common
-	import common_tls
 		
 	reverse_proxy libretranslate:5000  {
 		header_up Host {host}
@@ -52,9 +44,8 @@ https://{$TRANSLATE_SERVER_ADDRESS} {
 	}
 }
 
-https://{$KUNO_SERVER_ADDRESS} {
+:{$KUNO_PORT} {
 	import common
-	import common_tls
 
 	reverse_proxy kuno:80  {
 		header_up Host {host}
@@ -62,9 +53,8 @@ https://{$KUNO_SERVER_ADDRESS} {
 	}
 }
 
-https://{$MINECRAFT_ADMIN_SERVER_ADDRESS} {
+:{$MCADMIN_PORT} {
 	import common
-	import common_tls
 
 	reverse_proxy https://crafty:8443 {
 		transport http {
@@ -76,9 +66,8 @@ https://{$MINECRAFT_ADMIN_SERVER_ADDRESS} {
 	}
 }
 
-https://{$MINECRAFT_DYNMAP_SERVER_ADDRESS} {
+:{$MCMAP_PORT} {
 	import common
-	import common_tls
 
 	reverse_proxy crafty:8123  {
 		header_up Host {host}

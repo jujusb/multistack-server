@@ -8,22 +8,29 @@ services:
     container_name: caddy
     restart: unless-stopped
     environment:
-      MUSIC_SERVER_ADDRESS: ${MUSIC_SERVER_ADDRESS:-}
-      KUNO_SERVER_ADDRESS: ${KUNO_SERVER_ADDRESS:-}
-      TRANSLATE_SERVER_ADDRESS: ${TRANSLATE_SERVER_ADDRESS:-}
-      MINECRAFT_DYNMAP_SERVER_ADDRESS: ${MINECRAFT_DYNMAP_SERVER_ADDRESS:-}
-      MINECRAFT_ADMIN_SERVER_ADDRESS: ${MINECRAFT_ADMIN_SERVER_ADDRESS:-}
-      VPN_ADMIN_SERVER_ADDRESS: ${VPN_ADMIN_SERVER_ADDRESS:-}
-      CF_API_TOKEN: ${CF_API_TOKEN:-}
-      BASIC_AUTH_USERNAME: ${BASIC_AUTH_USERNAME:-}
-      BASIC_AUTH_PASSWORD_HASH: ${BASIC_AUTH_PASSWORD_HASH:-}
-    ports:
-      - "${HTTP_PORT:-80}:80"
-      - "${HTTPS_PORT:-443}:443"
+      MCADMIN_PORT: ${MCADMIN_PORT:-8080}
+      MCMAP_PORT: ${MCMAP_PORT:-8081}
+      KUNO_PORT: ${KUNO_PORT:-8082}
+      VPN_PORT: ${VPN_PORT:-8083}
+      TRANSLATE_PORT: ${TRANSLATE_PORT:-8084}
+      MUSIC_PORT: ${MUSIC_PORT:-8085}
+      MUSIC_HGM_PORT: ${MUSIC_HGM_PORT:-8086}
+      ZEROBYTE_PORT: ${ZEROBYTE_PORT:-8087}
     volumes:
       - ./global-caddy/Caddyfile:/etc/caddy/Caddyfile
       - caddy_root_data:/data
       - caddy_root_config:/config
+    networks:
+      - caddy_net
+
+  newt:
+    image: fosrl/newt
+    container_name: newt
+    restart: unless-stopped
+    environment:
+      - PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-}
+      - NEWT_ID=${NEWT_ID:-}
+      - NEWT_SECRET=${NEWT_SECRET:-}
     networks:
       - caddy_net
 

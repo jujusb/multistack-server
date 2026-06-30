@@ -13,3 +13,6 @@
 [submodule "minecraft-server"]
 	path = minecraft-server
 	url = https://github.com/jujusb/minecraft-server-crafty-docker
+[submodule "zerobyte"]
+	path = zerobyte
+	url = https://github.com/jujusb/zerobyte-docker
