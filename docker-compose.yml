@@ -3,14 +3,36 @@ networks:
     external: true
 
 services:
-  newt:
-    image: fosrl/newt
-    container_name: newt
-    restart: unless-stopped
+  netbird:
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+    cpu_shares: 90
+    command: []
+    container_name: netbird
+    deploy:
+      resources:
+        limits:
+          memory: "8224227328"
+        reservations:
+          memory: "134217728"
+          devices: []
     environment:
-      - PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-}
-      - NEWT_ID=${NEWT_ID:-}
-      - NEWT_SECRET=${NEWT_SECRET:-}
-    networks:
-      - caddy_net
-
+      - NB_ALLOW_SERVER_SSH=true
+      - NB_ENABLE_SSH_ROOT=true
+      - NB_HOSTNAME=${NB_HOSTNAME:-My Server}
+      - NB_MANAGEMENT_URL=${NB_MANAGEMENT_URL:-https://netbird.example.com}
+      - NB_SETUP_KEY=${NB_SETUP_KEY:-get this from your NetBird management console}
+    image: netbirdio/netbird:0.73.2
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/NetBird/icon.svg
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: $BASE_DATA_PATH/netbird
+        target: /var/lib/netbird
+    ports: []
+    devices: []
+    network_mode: "host"
+    privileged: false
