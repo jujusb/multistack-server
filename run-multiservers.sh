@@ -18,7 +18,7 @@ for SERVICE in "${SERVICES_ARRAY[@]}"; do
     source ./$SERVICE/.env
     set +a
     echo "Starting $SERVICE..."
-    (cd "$SERVICE" && ./run.sh "$@")
+    (pushd "$SERVICE" && ./run.sh "$@" && echo "$SERVICE started successfully." && popd) || echo "Failed to start $SERVICE."
 done
 
 source .env
