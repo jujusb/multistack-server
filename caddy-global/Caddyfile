@@ -1,0 +1,74 @@
+(common) {
+	encode gzip zstd
+}
+
+(common_tls) {
+	{$TLS_CONFIG}
+}
+
+https://{$MUSIC_SERVER_ADDRESS} {
+	import common
+	import common_tls
+
+	# 1. Strip the blocking header sent by Navidrome
+    header -X-Frame-Options
+    # 2. Add your own CSP to allow your website to embed it
+    # Replace 'https://your-website.com' with the domain doing the embedding
+	header Content-Security-Policy "frame-ancestors 'self' https://{$KUNO_SERVER_ADDRESS}"
+
+	reverse_proxy caddy-navidrome:{$MUSIC_PORT}  {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+https://{$KUNO_SERVER_ADDRESS} {
+	import common
+	import common_tls
+
+	reverse_proxy kuno:{$KUNO_PORT}  {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+https://{$TRANSLATE_SERVER_ADDRESS} {
+	import common
+	import common_tls
+		
+	reverse_proxy libretranslate:{$TRANSLATE_PORT}  {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+
+https://{$MINECRAFT_ADMIN_SERVER_ADDRESS} {
+	import common
+	import common_tls
+
+	reverse_proxy http://caddy-crafty:{$MINECRAFT_ADMIN_PORT} {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+https://{$MINECRAFT_DYNMAP_SERVER_ADDRESS} {
+	import common
+	import common_tls
+
+	reverse_proxy crafty:{$MINECRAFT_DYNMAP_PORT}  {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+https://{$ZEROBYTE_SERVER_ADDRESS} {
+	import common
+	import common_tls
+
+	reverse_proxy zerobyte:{$ZEROBYTE_PORT}  {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
