@@ -30,15 +30,21 @@ services:
       - caddy_root_config:/config
     networks:
       - caddy_net
-
   netbird:
+    image: netbirdio/netbird:0.73.2
+    container_name: netbird
+    hostname: ${NB_HOSTNAME:-My Server}
+    network_mode: "host"
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
-      - SYS_RESOURCE
     cpu_shares: 90
-    command: []
-    container_name: netbird
+    command: [
+      "service",
+      "run",
+      "--setup-key=${NB_SETUP_KEY}",
+      "--route=0.0.0.0/0"
+    ]
     deploy:
       resources:
         limits:
@@ -52,7 +58,6 @@ services:
       - NB_HOSTNAME=${NB_HOSTNAME:-My Server}
       - NB_MANAGEMENT_URL=${NB_MANAGEMENT_URL:?Set NB_MANAGEMENT_URL in .env}
       - NB_SETUP_KEY=${NB_SETUP_KEY:?Set NB_SETUP_KEY in .env}
-    image: netbirdio/netbird:0.73.2
     labels:
       icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/NetBird/icon.svg
     restart: unless-stopped
@@ -62,7 +67,6 @@ services:
         target: /var/lib/netbird
     ports: []
     devices: []
-    network_mode: "host"
     privileged: false
 
 volumes:

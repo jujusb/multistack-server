@@ -10,6 +10,10 @@ ensure_network() {
 
 ensure_network caddy_net
 source .env
+if [ ! -d "$BASE_DATA_PATH/.env" ]; then
+    mkdir -p "$BASE_DATA_PATH/.env"
+fi
+cp ./.env $BASE_DATA_PATH/.env/.env
 echo $SERVICES
 IFS=',' read -ra SERVICES_ARRAY <<< "$SERVICES"
 echo $SERVICES_ARRAY
@@ -18,6 +22,10 @@ for SERVICE in "${SERVICES_ARRAY[@]}"; do
     source ./$SERVICE/.env
     set +a
     echo "Starting $SERVICE..."
+    if [ ! -d "$BASE_DATA_PATH/.env/$SERVICE" ]; then
+        mkdir -p "$BASE_DATA_PATH/.env/$SERVICE"
+    fi
+    cp ./$SERVICE/.env $BASE_DATA_PATH/.env/$SERVICE/.env
     (pushd "$SERVICE" && ./run.sh "$@" && echo "$SERVICE started successfully." && popd) || echo "Failed to start $SERVICE."
 done
 
